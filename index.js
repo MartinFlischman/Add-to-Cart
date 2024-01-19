@@ -4,13 +4,27 @@ import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebas
 const appSettings = {
     databaseURL: "https://add-to-cart-ad7cf-default-rtdb.firebaseio.com/"
 }
+
 const app = initializeApp(appSettings)
 const database = getDatabase(app)
 const shoppingListInDB = ref(database, "shoppingList")
-
 const inputFieldEl = document.getElementById("input-field")
 const addButtonEl = document.getElementById("add-button")
 const shoppingListEl = document.getElementById("shopping-list")
+
+function clearInputFieldEl() {
+    inputFieldEl.value = ""
+}
+
+function appendItemToShoppingListEl(itemValue) {
+    const listItem = document.createElement("li")
+    listItem.textContent = itemValue
+    shoppingListEl.appendChild(listItem)
+}
+
+function clearShoppingListEl() {
+    shoppingListEl.innerHTML = ""
+}
 
 addButtonEl.addEventListener("click", function() {
     let inputValue = inputFieldEl.value
@@ -18,23 +32,14 @@ addButtonEl.addEventListener("click", function() {
     push(shoppingListInDB, inputValue)
     
     clearInputFieldEl()
-
-    appendItemToShoppingListEl(inputValue)
 })
 
 onValue(shoppingListInDB, function(snapshot) {
     let itemsArray = Object.values(snapshot.val())
     
+    clearShoppingListEl()
+    
     for (let i = 0; i < itemsArray.length; i++) {
-        
         appendItemToShoppingListEl(itemsArray[i])
     }
 })
-
-function clearInputFieldEl() {
-    inputFieldEl.value = ""
-}
-
-function appendItemToShoppingListEl(itemValue) {
-    shoppingListEl.innerHTML += `<li>${itemValue}</li>`
-}
