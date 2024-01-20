@@ -8,6 +8,7 @@ const appSettings = {
 const app = initializeApp(appSettings)
 const database = getDatabase(app)
 const shoppingListInDB = ref(database, "shoppingList")
+
 const inputFieldEl = document.getElementById("input-field")
 const addButtonEl = document.getElementById("add-button")
 const shoppingListEl = document.getElementById("shopping-list")
@@ -21,20 +22,20 @@ addButtonEl.addEventListener("click", function() {
 })
 
 onValue(shoppingListInDB, function(snapshot) {
-    let itemsArray = snapshot.val()
-
-    if (itemsArray) {
-        itemsArray = Object.entries(itemsArray)
-
+    if (snapshot.exists()) {
+        let itemsArray = Object.entries(snapshot.val())
+    
         clearShoppingListEl()
-
+        
         for (let i = 0; i < itemsArray.length; i++) {
             let currentItem = itemsArray[i]
             let currentItemID = currentItem[0]
             let currentItemValue = currentItem[1]
-
+            
             appendItemToShoppingListEl(currentItem)
-        }
+        }    
+    } else {
+        shoppingListEl.innerHTML = "No items here... yet"
     }
 })
 
@@ -47,22 +48,18 @@ function clearInputFieldEl() {
 }
 
 function appendItemToShoppingListEl(item) {
-    let itemID = item[0];
-    let itemValue = item[1];
-
-    let newEl = document.createElement("li");
-
-    newEl.textContent = itemValue;
-
+    let itemID = item[0]
+    let itemValue = item[1]
+    
+    let newEl = document.createElement("li")
+    
+    newEl.textContent = itemValue
+    
     newEl.addEventListener("click", function() {
-        let exactLocationOfItemInDB = ref(database, `shoppingList/${itemID}`);
+        let exactLocationOfItemInDB = ref(database, ["shoppingList", itemID])
         
-        remove(exactLocationOfItemInDB).then(() => {
-            newEl.remove();
-        }).catch((error) => {
-            console.error("Error removing item:", error);
-        });
-    });
-
-    shoppingListEl.append(newEl);
+        remove(exactLocationOfItemInDB)
+    })
+    
+    shoppingListEl.append(newEl)
 }
