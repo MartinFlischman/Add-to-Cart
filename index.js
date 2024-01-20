@@ -21,16 +21,20 @@ addButtonEl.addEventListener("click", function() {
 })
 
 onValue(shoppingListInDB, function(snapshot) {
-    let itemsArray = Object.entries(snapshot.val())
-    
-    clearShoppingListEl()
-    
-    for (let i = 0; i < itemsArray.length; i++) {
-        let currentItem = itemsArray[i]
-        let currentItemID = currentItem[0]
-        let currentItemValue = currentItem[1]
-        
-        appendItemToShoppingListEl(currentItem)
+    let itemsArray = snapshot.val()
+
+    if (itemsArray) {
+        itemsArray = Object.entries(itemsArray)
+
+        clearShoppingListEl()
+
+        for (let i = 0; i < itemsArray.length; i++) {
+            let currentItem = itemsArray[i]
+            let currentItemID = currentItem[0]
+            let currentItemValue = currentItem[1]
+
+            appendItemToShoppingListEl(currentItem)
+        }
     }
 })
 
@@ -43,18 +47,22 @@ function clearInputFieldEl() {
 }
 
 function appendItemToShoppingListEl(item) {
-    let itemID = item[0]
-    let itemValue = item[1]
-    
-    let newEl = document.createElement("li")
-    
-    newEl.textContent = itemValue
-    
+    let itemID = item[0];
+    let itemValue = item[1];
+
+    let newEl = document.createElement("li");
+
+    newEl.textContent = itemValue;
+
     newEl.addEventListener("click", function() {
-        let exactLocationOfItemInDB = ref(database, `shoppingList/${itemID}`)
+        let exactLocationOfItemInDB = ref(database, `shoppingList/${itemID}`);
         
-        remove(exactLocationOfItemInDB)
-    })
-    
-    shoppingListEl.append(newEl)
+        remove(exactLocationOfItemInDB).then(() => {
+            newEl.remove();
+        }).catch((error) => {
+            console.error("Error removing item:", error);
+        });
+    });
+
+    shoppingListEl.append(newEl);
 }
