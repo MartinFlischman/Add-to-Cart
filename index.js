@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
+import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"
 
 const appSettings = {
     databaseURL: "https://add-to-cart-ad7cf-default-rtdb.firebaseio.com/"
@@ -27,6 +27,12 @@ function appendItemToShoppingListEl(item) {
     let newEl = document.createElement("li")
     
     newEl.textContent = itemValue
+    
+    newEl.addEventListener("click", function() {
+        let exactLocationOfItemInDB = ref(database, `shoppingList/${itemID}`)
+        
+        remove(exactLocationOfItemInDB)
+    })
     
     shoppingListEl.append(newEl)
 }
