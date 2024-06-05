@@ -6,6 +6,15 @@
   --font-size: 1.25rem;
 }
 
+/* Global reset: Set box-sizing, margins, and padding for all elements and pseudo-elements */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 /* Base styles for HTML and body */
 html,
 body {
